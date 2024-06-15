@@ -1,4 +1,4 @@
-import { Bot } from "grammy";
+import { Bot, Keyboard } from "grammy";
 import { Command } from "./command.class";
 import { IBotContext } from "../context/context.interface";
 
@@ -8,7 +8,14 @@ export class StartCommand extends Command {
   }
   
   handle(): void {
-    this.bot.command("start", (ctx: IBotContext) => {
+    this.bot.command("start", (ctx: IBotContext) => {      
+      const keyboard = new Keyboard()
+                        .text("Заметки").text("Инвестиции").row()
+                        .text("Фильмы и сериалы").text("Планы на сегодня");
+
+      ctx.reply("Хочу посмотреть...", {
+        reply_markup: keyboard
+      })
     });
   }
 }

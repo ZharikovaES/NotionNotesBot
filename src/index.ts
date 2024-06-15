@@ -1,15 +1,16 @@
-import { Bot, GrammyError, HttpError } from 'grammy';
+import { Bot as BotGrammy, GrammyError, HttpError, session} from "grammy";
+import { IConfigService } from "./config/config.interface";
+import { IBotContext, SessionData } from "./context/context.interface";
+import { ConfigService } from "./config/config.service";
+import { Command } from "./commands/command.class";
+import { StartCommand } from "./commands/start.command";
 
-function main() {
-  const TG_BOT_KEY = process.env.TG_BOT_KEY;
-  if (TG_BOT_KEY) {
-    const bot = new Bot(TG_BOT_KEY);
-
-    bot.command('start', async (ctx) => {
-      await ctx.reply('Привет!');
-    });
-
-    bot.catch((error) => {
+class Bot {
+  bot: BotGrammy<IBotContext>;
+  commands: Command[] = [];
+  constructor(private readonly configService: IConfigService) {
+    this.bot = new BotGrammy<IBotContext>(this.configService.get('TG_BOT_KEY'));
+    this.bot.catch((error) => {
       const ctx = error.ctx;
       console.error(`Error while handling update ${ctx.update.update_id}`);
       const e = error.error;
@@ -22,9 +23,23 @@ function main() {
         console.error('Unknown error', e); 
       }
     });
+  }
 
-    bot.start();
+  inital = (): SessionData => {
+    return {
+      test: 1
+    }
+  }
+
+  init() {
+    this.bot.start();
+    this.bot.use(session({ initial: this.inital }));
+
+    this.commands = [new StartCommand(this.bot)];
+    this.commands.forEach(command => command.handle());
   }
 }
 
-main();
+const config = new ConfigService();
+const bot = new Bot(config);
+bot.init();
