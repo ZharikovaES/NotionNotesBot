@@ -21,8 +21,8 @@ export class ConfigService implements IConfigService {
 
     if (!res) {
       throw new Error(`Нет ключа ${key}`);
-
     }
+
     return res;
   }
 }

@@ -10,8 +10,11 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@grammyjs/parse-mode": "^1.10.0",
+    "@notionhq/client": "^2.2.15",
     "dotenv": "^16.4.5",
-    "grammy": "^1.21.1"
+    "grammy": "^1.21.1",
+    "table": "^6.8.2"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
