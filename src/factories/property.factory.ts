@@ -9,7 +9,11 @@ export class PropertyFactory {
       case 'title':
         return propery.title.map(title => RichTextItemFactory.createRichText(<RichTextItemResponse>title)).join('');
       case 'date':
-        return propery.date?.end ? new Date(propery.date.end).toLocaleString() : '--:--';
+        return propery.date?.start ? new Date(propery.date.start).toLocaleString('ru-RU', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        }) : '--:--';
       default:
         throw new Error(`Unknown property type: ${propery.type}`);
     }

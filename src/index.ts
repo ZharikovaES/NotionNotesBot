@@ -1,4 +1,5 @@
-import { Bot as BotGrammy, GrammyError, HttpError, Keyboard, session} from "grammy";
+import { Bot as BotGrammy, GrammyError, HttpError, session} from "grammy";
+import { hydrateReply } from "@grammyjs/parse-mode";
 import { IConfigService } from "./config/config.interface";
 import { IBotContext, SessionData } from "./context/context.interface";
 import { ConfigService } from "./config/config.service";
@@ -7,8 +8,7 @@ import { StartCommand } from "./commands/start.command";
 import { Notion } from "./services/notion.service";
 import { NotionHear } from "./hears/notions.hear";
 import { Hear } from "./hears/hear.class";
-import { InvestmentsHear } from "./hears/Investments.hear";
-import { hydrateReply, parseMode } from "@grammyjs/parse-mode";
+import { InvestmentsHear } from "./hears/investments.hear";
 
 class Bot {
   bot: BotGrammy<IBotContext>;
@@ -45,7 +45,8 @@ class Bot {
     this.bot.use(session({ initial: this.inital }));
 
     this.commands = [new StartCommand(this.bot, this.notion)];
-    this.hears = [new NotionHear(this.bot, this.notion), new InvestmentsHear(this.bot, this.notion)];
+    this.hears = [new NotionHear(this.bot, this.notion), 
+                  new InvestmentsHear(this.bot, this.notion)];
 
     [...this.commands, ...this.hears]
       .forEach(command => command.handle());

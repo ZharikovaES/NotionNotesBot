@@ -1,5 +1,5 @@
-import { IConfigService } from "../config/config.interface";
 import { APIErrorCode, Client, collectPaginatedAPI, isFullBlock, isFullPage, isNotionClientError } from "@notionhq/client";
+import { IConfigService } from "../config/config.interface";
 import { BlockFactory } from "../factories/block.factory";
 import { PropertyFactory } from "../factories/property.factory";
 import { InvestmentsTable } from "../format/investments.table";
@@ -24,8 +24,6 @@ export class Notion {
       const blocks = await collectPaginatedAPI(this.notion.blocks.children.list, {
         block_id: pageId,
       });
-
-      console.log(blocks);
 
       const res = blocks.reduce((previousValue, block) => {
         if (!isFullBlock(block)) {
@@ -55,10 +53,7 @@ export class Notion {
   }
   
   private async getDatabaseData(databaseId: string): Promise<string | null> {
-    try {
-
-      // console.log(this.notion.databases.list);
-      
+    try {      
       const db = await this.notion.databases.query({
         database_id: databaseId,
       });
@@ -68,7 +63,9 @@ export class Notion {
         if (!isFullPage(page)) {
           return;
         }
-        return Object.values(page.properties).map(property => PropertyFactory.createProperty(property))
+        
+        return Object.values(page.properties)
+                      .map(property => PropertyFactory.createProperty(property))
       }).filter(row => !!row);
 
       const page = db.results.find(page => isFullPage(page));
@@ -79,18 +76,6 @@ export class Notion {
 
       const columns = Object.keys(page.properties);
       const table = new InvestmentsTable(columns, results);
-      console.log(results, columns);
-      
-
-      // const res = blocks.reduce((previousValue, block) => {
-      //   if (!('type' in block)) {
-      //     return previousValue;
-      //   }
-
-      //   const blockPage = BlockFactory.createBlock(block);
-      //   const newText = blockPage.toString();
-      //   return previousValue + newText;
-      // }, '');
       
       return table.toString();
     } catch (error) {
